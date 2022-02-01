@@ -1,18 +1,40 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-  </div>
+ <div>
+    <the-navbar />
+
+    <div class="container with-nav">
+     
+      <div class="todolist">
+        <div v-for="(todo, index) in todos" :key="index">
+          <div class="card">
+            <div class="card-title">{{ todo.name }}</div>   
+          </div>
+        </div>
+      </div><!-- /.todolist -->
+    </div>
+   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import TheNavbar from '../components/TheNavbar.vue';
 
 export default {
+  
   name: "Home",
-  components: {
-    HelloWorld,
+  data: () => ({
+    todos: []
+  }),
+  mounted() {
+    this.todos = this.$store.getters.todos
   },
+  components: {TheNavbar}
 };
 </script>
+
+<style scoped>
+  .todolist {
+    margin: 20px 0;
+  }
+  
+
+</style>
