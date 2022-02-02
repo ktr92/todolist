@@ -27,22 +27,36 @@ export default new Vuex.Store({
         name: 'Прочитать книгу',
         list: [{
             listname: 'Купить книгу',
-            status: 0
+            status: 1
           },
           {
             listname: 'Начать чтение',
-            status: 0
+            status: 1
           },
           {
             listname: 'Завершить чтение',
-            status: 0
+            status: 1
           },
         ]
       }
     ]
   },
-  mutations: {},
-  actions: {},
+  mutations: {
+    addItem(state, payload) {
+      state.todos.push(payload)
+    },
+    removeItem(state, payload) {
+      state.todos = state.todos.filter(item => item.id != payload)
+    }
+  },
+  actions: {
+    addnew(context, payload) {
+      context.commit('addItem', payload)
+    },
+    remove(context, payload) {
+      context.commit('removeItem', payload)
+    }
+  },
   modules: {},
   getters: {
     todos: state => state.todos,

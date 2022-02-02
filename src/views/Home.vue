@@ -1,40 +1,40 @@
 <template>
  <div>
-    <the-navbar />
-
+    <TheNavbar />
     <div class="container with-nav">
-     
-      <div class="todolist">
-        <div v-for="(todo, index) in todos" :key="index">
-          <div class="card">
-            <div class="card-title">{{ todo.name }}</div>   
-          </div>
-        </div>
-      </div><!-- /.todolist -->
+        <AppTodolist />
     </div>
    </div>
 </template>
 
 <script>
+import AppTodolist from '../components/AppTodolist.vue';
 import TheNavbar from '../components/TheNavbar.vue';
 
 export default {
   
   name: "Home",
   data: () => ({
-    todos: []
+  
   }),
-  mounted() {
-    this.todos = this.$store.getters.todos
-  },
-  components: {TheNavbar}
+ 
+  components: {TheNavbar, AppTodolist}
 };
 </script>
 
-<style scoped>
+<style >
+  .card-title span {
+    font-weight: bold;
+  }
   .todolist {
     margin: 20px 0;
   }
-  
+  .card-content {
+    
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-top: 15px;
+  }
 
 </style>
