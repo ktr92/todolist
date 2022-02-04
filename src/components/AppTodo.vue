@@ -1,41 +1,56 @@
 <template>
   <div>
+    
     <form @submit.prevent="onSubmit">
-      <div class="card" v-if="todo">
+      <div class="card" v-if="currentTodo">
         <div class="card-title">
-          <span>{{ todo.name }}</span>
+          <span>{{ currentTodo.name }}</span>
           <div>
-            <span type="submit" class="btn primary">Сохранить заметку</span>
+            <button type="submit" class="btn primary">Сохранить изменения</button>
             <span class="btn warning" @click="cancel">Отменить все</span>
             <span class="btn danger" @click="remove">Удалить заметку</span> 
           </div>
         </div>
         <hr>
         <div class="card-list">
-          <div v-for="(item, index) in todo.list" :key="index">
+          <div v-for="(item, index) in currentTodo.list" :key="index">
             <div>
             <input type="checkbox" 
-              :id="`${todo.id}-${index}`" 
+              :id="`${currentTodo.id}-${index}`" 
               :checked="item.status" 
-              v-model="item.status"
+              @change="changeStatus(index)"
             >
             <label 
-              :for="`${todo.id}-${index}`" 
+              :for="`${currentTodo.id}-${index}`" 
               :class="{completed: item.status}"
             >
                 {{ item.listname }}
             </label>
-            <div class="removeitem" @click.stop="removeOne">
+            <div class="edititem action" @click.stop="editOne(index)">
+              <img src="@/assets/edit-svgrepo-com.svg" alt="">
+            </div>
+            <div class="removeitem action" @click.stop="removeOne(index)">
               &#10006;
             </div>
             </div>
           </div>    
         </div>
+
+        <div class="form-control list-add" @click="addList">
+            <img src="@/assets/add-r-svgrepo-com.svg" alt="">
+              <span>Добавить еще</span>
+        </div>
        
         <div class="card-title row">
           <div class="form-control">
-            <span class="btn warning" @click="cancelOne">Отменить изменение</span>
-            <span class="btn" @click="repeatOne">Повторить измененное</span>
+            <span class="button action" @click="cancelOne">
+              <img src="@/assets/repeat-svgrepo-com.svg" alt="">
+              <span>Отменить</span>
+            </span>
+            <span class="button action" @click="repeatOne">
+              <img src="@/assets/repeat-svgrepo-com (1).svg" alt="">
+              <span>Повторить</span>
+            </span>
           </div>
           
         </div>
@@ -52,40 +67,139 @@
 
 export default {
   data: () => ({
-    /* todo: {} */
+    todo: {},
+    todos: [],
+    currentIndex: 1
   }),
   mounted() {
-    /* this.todo = this.$store.getters.todo(this.$route.params.id) */
+    this.todo = this.$store.getters.todo(this.$route.params.id)
+    this.todos.push(this.todo)
+    
+  },
+  watch: {
+    currentTodo: function() {
+      console.log(this.todos)
+    }
   },
   computed: {
-    todo() {
-      return this.$store.getters.todo(this.$route.params.id)
+    size() {
+      return this.todos.length
+    },
+    currentTodo() {
+      return this.todos[this.size - this.currentIndex]
     }
   },
   methods: {
-    onSubmit() {
-      
+    newchange(fchange) {
+      let nextChange = JSON.parse(JSON.stringify(this.todos[this.size - this.currentIndex]));
+      fchange(nextChange)
+      this.todos.push(nextChange)
     },
-    removeOne() {
+    onSubmit() {
+      this.$store.dispatch('save', this.currentTodo)
+      let instance = this.$toast.open({message: 'Заметка сохранена!', type: 'success'});
+        setTimeout({
+            function () {
+              instance.dismiss();
+            }
+          },
+          3000)
+    },
+    changeStatus(index) {
+       this.newchange(function(obj){
+         obj.list[index].status = !obj.list[index].status
+       })
+    },
+    addList() {
 
+    },
+    editOne() {
+
+    },
+    removeOne(index) {
+      this.newchange(function(obj) {
+        obj.list.splice(index, 1)
+      })
+     
     },
     remove() {
-
+      this.$confirm(
+        {
+          message: `Удалить заметку?`,
+          button: {
+            no: 'Нет',
+            yes: 'Да'
+          },
+          /**
+          * Callback Function
+          * @param {Boolean} confirm 
+          */
+          callback: confirm => {
+            if (confirm) {
+                this.$store.dispatch('remove', this.todo.id)
+                this.$router.push('/')
+                let instance = this.$toast.open({message: 'Заметка удалена!', type: 'warning'});
+                setTimeout({
+                    function () {
+                      instance.dismiss();
+                    }
+                  },
+                  3000)
+                }
+            }
+          }        
+      )
+      
     },
     cancelOne() {
-
+      if (this.size > this.currentIndex) {
+        this.currentIndex++
+      }
+      else {
+        this.currentIndex = this.size
+      }
     },
     repeatOne() {
-
+      if (this.currentIndex > 1) {
+        this.currentIndex--
+      }
+      else {
+        this.currentIndex = 1
+      }
     },
     cancel() {
-
+       this.$confirm(
+        {
+          message: `Отменить все изменения?`,
+          button: {
+            no: 'Нет',
+            yes: 'Да'
+          },
+          /**
+          * Callback Function
+          * @param {Boolean} confirm 
+          */
+          callback: confirm => {
+            if (confirm) {
+                 this.todos.splice(1)
+                  this.currentIndex = this.size
+                }
+            }
+          }        
+      )
+     
     }
   }
 }
 </script>
 
 <style>
+.action {
+  cursor: pointer;
+}
+.action img {
+  width: 15px;
+}
   .completed {
     text-decoration: line-through;
   }
@@ -97,8 +211,7 @@ export default {
     margin-top: 15px;
   }
   
-
-  .removeitem {
+  .edititem {
     position: absolute;
     right: -20px;
     cursor: pointer;
@@ -106,9 +219,46 @@ export default {
     top: 0;
     color: red;
   }
+  .removeitem {
+    position: absolute;
+    right: -40px;
+    cursor: pointer;
+    z-index: 2;
+    top: 0;
+    color: red;
+  }
   .card-list > div > div {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
      position: relative;
   display: inline-block;
+  }
+  .button {
+    margin-right: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .button img {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+  }
+  span {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  img {
+     display: inline-block;
+     vertical-align: middle;
+  }
+  .list-add  img {
+    width: 15px;
+    height: 15px;
+  }
+  .list-add {
+    margin-left: 3px;
+    cursor: pointer;
+  }
+  .form-control span {
+    padding-left: 5px;
   }
 </style>

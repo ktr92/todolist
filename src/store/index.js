@@ -47,6 +47,18 @@ export default new Vuex.Store({
     },
     removeItem(state, payload) {
       state.todos = state.todos.filter(item => item.id != payload)
+    },
+    saveItem(state, payload) {
+      state.todos = state.todos.map(
+        (item) => {
+          if (payload.id == item.id) {
+            console.log(item)
+            item = JSON.parse(JSON.stringify(payload))
+          }
+
+          return item
+        }
+      )
     }
   },
   actions: {
@@ -55,6 +67,9 @@ export default new Vuex.Store({
     },
     remove(context, payload) {
       context.commit('removeItem', payload)
+    },
+    save(context, payload) {
+      context.commit('saveItem', payload)
     }
   },
   modules: {},
