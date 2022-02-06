@@ -5,46 +5,47 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    todos: [{
-        id: '001',
-        name: 'Сделать задание по VUE',
-        list: [{
-            listname: 'Изучить техзадание',
-            status: 1,
-            editing: false
-          },
-          {
-            listname: 'Сделать верстку',
-            status: 0,
-            editing: false
-          },
-          {
-            listname: 'Сделать функционал',
-            status: 0,
-            editing: false
-          },
-        ]
-      },
-      {
-        id: '002',
-        name: 'Прочитать книгу',
-        list: [{
-            listname: 'Купить книгу',
-            status: 1,
-            editing: false
-          },
-          {
-            listname: 'Начать чтение',
-            status: 1,
-            editing: false
-          },
-          {
-            listname: 'Завершить чтение',
-            status: 1,
-            editing: false
-          },
-        ]
-      }
+    todos: [
+      /* {
+              id: '001',
+              name: 'Сделать задание по VUE',
+              list: [{
+                  listname: 'Изучить техзадание',
+                  status: 1,
+                  editing: false
+                },
+                {
+                  listname: 'Сделать верстку',
+                  status: 0,
+                  editing: false
+                },
+                {
+                  listname: 'Сделать функционал',
+                  status: 0,
+                  editing: false
+                },
+              ]
+            },
+            {
+              id: '002',
+              name: 'Прочитать книгу',
+              list: [{
+                  listname: 'Купить книгу',
+                  status: 1,
+                  editing: false
+                },
+                {
+                  listname: 'Начать чтение',
+                  status: 1,
+                  editing: false
+                },
+                {
+                  listname: 'Завершить чтение',
+                  status: 1,
+                  editing: false
+                },
+              ]
+            } */
     ]
   },
   mutations: {
@@ -53,6 +54,9 @@ export default new Vuex.Store({
     },
     removeItem(state, payload) {
       state.todos = state.todos.filter(item => item.id != payload)
+    },
+    createList(state, payload) {
+      state.todos = JSON.parse(JSON.stringify(payload))
     },
     saveItem(state, payload) {
       state.todos = state.todos.map(

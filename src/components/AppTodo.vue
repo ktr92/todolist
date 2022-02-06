@@ -20,15 +20,23 @@
               :checked="item.status" 
               @change="changeStatus(index)"
             >
-            <label 
-              :for="`${currentTodo.id}-${index}`" 
-              :class="{completed: item.status}"
-            >
-                {{ item.listname }}
-            </label>
-            <div class="edititem action" @click.stop="editOne(index)">
-              <img src="@/assets/edit-svgrepo-com.svg" alt="">
-            </div>
+            <span>
+              <input type="text"
+                v-model="item.listname"
+                :disabled = "!item.editing" 
+                :class="{completed: item.status}"
+              />
+            </span>
+            <span>
+              <div class="edititem action" @click.stop="editOne(index)" v-if="!item.editing">
+                <img src="@/assets/edit-svgrepo-com.svg" alt="">
+              </div>
+              <div class="saveitem action" @click.stop="saveOne(index)" v-else>
+                <img src="@/assets/save-technology-svgrepo-com.svg" alt="">
+              </div>
+            </span>
+           
+            
             <div class="removeitem action" @click.stop="removeOne(index)">
               &#10006;
             </div>
@@ -36,7 +44,7 @@
           </div>    
         </div>
 
-        <div class="form-control list-add" @click="addList">
+        <div class="form-control list-add" @click="addOne">
             <img src="@/assets/add-r-svgrepo-com.svg" alt="">
               <span>Добавить еще</span>
         </div>
@@ -72,7 +80,10 @@ export default {
     currentIndex: 1
   }),
   mounted() {
+    const todolist = JSON.parse(localStorage.getItem('todolist'))
+    this.$store.commit('createList', todolist)
     this.todo = this.$store.getters.todo(this.$route.params.id)
+    this.todo.list.map(item => item.editing = false)
     this.todos.push(this.todo)
     
   },
@@ -87,7 +98,8 @@ export default {
     },
     currentTodo() {
       return this.todos[this.size - this.currentIndex]
-    }
+    },
+
   },
   methods: {
     newchange(fchange) {
@@ -96,7 +108,12 @@ export default {
       this.todos.push(nextChange)
     },
     onSubmit() {
+      this.currentTodo.list.map(item => item.editing = false)
       this.$store.dispatch('save', this.currentTodo)
+      if (localStorage.getItem('todolist')) {
+        localStorage.removeItem('todolist')       
+      }
+      localStorage.setItem("todolist", JSON.stringify(this.$store.getters.todos));
       let instance = this.$toast.open({message: 'Заметка сохранена!', type: 'success'});
         setTimeout({
             function () {
@@ -110,11 +127,23 @@ export default {
          obj.list[index].status = !obj.list[index].status
        })
     },
-    addList() {
-
+    addOne() {
+      this.newchange(function(obj){
+         obj.list.push({
+           listname: '',
+            status: 0,
+            editing: true
+         })
+       })
     },
-    editOne() {
-
+    editOne(index) {
+      this.newchange(function(obj) {
+        obj.list[index].editing = !obj.list[index].editing
+      })
+    },
+    saveOne(index) {
+      
+      this.editOne(index)
     },
     removeOne(index) {
       this.newchange(function(obj) {
@@ -137,6 +166,10 @@ export default {
           callback: confirm => {
             if (confirm) {
                 this.$store.dispatch('remove', this.todo.id)
+                if (localStorage.getItem('todolist')) {
+                    localStorage.removeItem('todolist')       
+                  }
+                  localStorage.setItem("todolist", JSON.stringify(this.$store.getters.todos));
                 this.$router.push('/')
                 let instance = this.$toast.open({message: 'Заметка удалена!', type: 'warning'});
                 setTimeout({
@@ -208,10 +241,10 @@ export default {
     display: inline-block;
   }
   .row {
-    margin-top: 15px;
+    margin-top: 25px;
   }
   
-  .edititem {
+  .edititem, .saveitem {
     position: absolute;
     right: -20px;
     cursor: pointer;
@@ -260,5 +293,14 @@ export default {
   }
   .form-control span {
     padding-left: 5px;
+  }
+  input[type="text"] {
+    display: inline-block;
+    vertical-align: text-top;
+  }
+  input[disabled="disabled"] {
+    background: none;
+    border: 1px solid transparent;
+
   }
 </style>

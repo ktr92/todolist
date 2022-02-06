@@ -11,7 +11,7 @@
               </span>
             </div>   
             <div class="card-content">
-              <div v-for="(item, index) in todo.list" :key="index">
+              <div v-for="(item, index) in todo.list" :key="index"  v-show="index < 3">
                 <span :class="{completed: item.status}">{{ item.listname }}</span>
               </div>
             </div>
@@ -28,7 +28,8 @@ export default {
    /*  todos: [] */
   }),
   mounted() {
-    /* this.todos = this.$store.getters.todos */
+    const todolist = JSON.parse(localStorage.getItem('todolist'))
+    this.$store.commit('createList', todolist)
   },
   methods: {
     remove(id) {
