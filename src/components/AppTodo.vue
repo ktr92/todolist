@@ -80,8 +80,13 @@ export default {
     currentIndex: 1
   }),
   mounted() {
-    const todolist = JSON.parse(localStorage.getItem('todolist'))
-    this.$store.commit('createList', todolist)
+    if (localStorage.getItem('todolist')) {
+      const todolist = JSON.parse(localStorage.getItem('todolist'))
+      this.$store.commit('createList', todolist)     
+    }
+    else {
+      this.$store.setItem('todolist', JSON.stringify(this.$store.getters.todos))
+    }
     this.todo = this.$store.getters.todo(this.$route.params.id)
     this.todo.list.map(item => item.editing = false)
     this.todos.push(this.todo)

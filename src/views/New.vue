@@ -69,6 +69,10 @@ export default {
 
         this.newname = ""
         this.todotexts = [{listname: '', status: 0}]
+        if (localStorage.getItem('todolist')) {
+          localStorage.removeItem('todolist')       
+        }
+        localStorage.setItem("todolist", JSON.stringify(this.$store.getters.todos));
         let instance = this.$toast.open('Заметка добавлена!');
         setTimeout({
             function () {
