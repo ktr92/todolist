@@ -10,15 +10,18 @@ export default new Vuex.Store({
         name: 'Сделать задание по VUE',
         list: [{
             listname: 'Изучить техзадание',
-            status: 1
+            status: 1,
+            editing: false
           },
           {
             listname: 'Сделать верстку',
-            status: 0
+            status: 0,
+            editing: false
           },
           {
             listname: 'Сделать функционал',
-            status: 0
+            status: 0,
+            editing: false
           },
         ]
       },
@@ -27,15 +30,18 @@ export default new Vuex.Store({
         name: 'Прочитать книгу',
         list: [{
             listname: 'Купить книгу',
-            status: 1
+            status: 1,
+            editing: false
           },
           {
             listname: 'Начать чтение',
-            status: 1
+            status: 1,
+            editing: false
           },
           {
             listname: 'Завершить чтение',
-            status: 1
+            status: 1,
+            editing: false
           },
         ]
       }
@@ -70,7 +76,7 @@ export default new Vuex.Store({
     },
     save(context, payload) {
       context.commit('saveItem', payload)
-    }
+    },
   },
   modules: {},
   getters: {
