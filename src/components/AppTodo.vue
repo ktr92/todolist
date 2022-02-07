@@ -80,13 +80,7 @@ export default {
     currentIndex: 1
   }),
   mounted() {
-    if (localStorage.getItem('todolist')) {
-      const todolist = JSON.parse(localStorage.getItem('todolist'))
-      this.$store.commit('createList', todolist)     
-    }
-    else {
-      this.$store.setItem('todolist', JSON.stringify(this.$store.getters.todos))
-    }
+    this.$initdata('todolist', this.$store.getters.todos);
     this.todo = this.$store.getters.todo(this.$route.params.id)
     this.todo.list.map(item => item.editing = false)
     this.todos.push(this.todo)
@@ -115,10 +109,7 @@ export default {
     onSubmit() {
       this.currentTodo.list.map(item => item.editing = false)
       this.$store.dispatch('save', this.currentTodo)
-      if (localStorage.getItem('todolist')) {
-        localStorage.removeItem('todolist')       
-      }
-      localStorage.setItem("todolist", JSON.stringify(this.$store.getters.todos));
+      this.$savedata('todolist', this.$store.getters.todos)  
       let instance = this.$toast.open({message: 'Заметка сохранена!', type: 'success'});
         setTimeout({
             function () {

@@ -38,7 +38,6 @@
 import TheNavbar from '../components/TheNavbar.vue'
 
 
-
 export default {
   components: { TheNavbar },
   data: () => ({
@@ -69,10 +68,7 @@ export default {
 
         this.newname = ""
         this.todotexts = [{listname: '', status: 0}]
-        if (localStorage.getItem('todolist')) {
-          localStorage.removeItem('todolist')       
-        }
-        localStorage.setItem("todolist", JSON.stringify(this.$store.getters.todos));
+         this.$savedata('todolist', this.$store.getters.todos)  
         let instance = this.$toast.open('Заметка добавлена!');
         setTimeout({
             function () {

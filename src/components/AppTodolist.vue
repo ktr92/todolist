@@ -28,13 +28,14 @@ export default {
    /*  todos: [] */
   }),
   mounted() {
-    if (localStorage.getItem('todolist')) {
+    this.$initdata('todolist', this.$store.getters.todos);
+   /*  if (localStorage.getItem('todolist')) {
       const todolist = JSON.parse(localStorage.getItem('todolist'))
       this.$store.commit('createList', todolist)     
     }
     else {
       this.$store.setItem('todolist', JSON.stringify(this.$store.getters.todos))
-    }
+    } */
   },
   methods: {
     remove(id) {
